@@ -18,7 +18,8 @@
 #include <Arduino.h>
 #include <AccelStepper.h>
 #include <FastLED.h>
-#include <TMCStepper.h>
+#include <TMCStepper.h>   // pinned and installed, but no driver is constructed
+                          // yet -- see the TMC block in src/config/tuning.h
 
 #include "src/config/pins.h"
 #include "src/config/tuning.h"

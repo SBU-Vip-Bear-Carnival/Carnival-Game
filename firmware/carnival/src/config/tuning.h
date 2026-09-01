@@ -9,7 +9,13 @@
 // If a number in here is wrong, the game feels wrong. Treat it as real code.
 //
 
+#include <Arduino.h>
+
 // --- TMC2209 stepper drivers -------------------------------------------
+// ⚠ NOT APPLIED YET. Nothing constructs a TMC2209Stepper, so these three are
+// currently dead constants and the drivers run at their hardware/jumper
+// defaults. Wiring up UART control is V2 work; until then do not trust the
+// current limit below to be what the motors are actually getting.
 const float TMC_R_SENSE          = 0.11f;   // sense resistor on the driver board
 const int   TMC_CURRENT_MA       = 600;     // per-motor RMS current
 const int   TMC_MICROSTEPS       = 2;

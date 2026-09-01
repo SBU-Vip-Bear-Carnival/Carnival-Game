@@ -16,7 +16,7 @@ spends an afternoon debugging a fault that is not there.
 | Stepper 1 ENABLE | 7 | LOW = enabled (TMC2209) |
 | Stepper 2 STEP | 9 | track 2 |
 | Stepper 2 DIR | 8 | |
-| Stepper 2 ENABLE | 13 | |
+| Stepper 2 ENABLE | 13 | ⚠ see below |
 | Pressure plate 1 | A0 | analog |
 | Pressure plate 2 | A1 | analog |
 | Track 1 limit — start | 25 | `INPUT_PULLUP` |
@@ -30,16 +30,33 @@ spends an afternoon debugging a fault that is not there.
 | WS2812B data | 6 | addressable strip, 40 LEDs |
 | DFPlayer Mini | Serial1 (18/19) | TX/RX |
 
+### ⚠ Pin 13 is a real defect, not a documentation error
+
+`ENBL_PIN2` is on pin 13, which is the Mega's **built-in LED pin**. The
+bootloader toggles it for roughly a second on every reset and every upload, and
+the TMC2209's enable is active-LOW — so stepper driver 2 receives spurious
+enable pulses at every power-up and every flash. The onboard LED and its series
+resistor also load that line.
+
+This is inherited from V1 and is documented here as the machine actually is.
+**Moving it is a hardware change**, so it needs a rewire and a matching `pins.h`
+edit in the same PR. Any free digital pin that is not 13 will do. Worth doing
+before V2 ships; harmless to leave while bench testing.
+
 Not yet wired — the V2 5-button panel and LCD. Add them to `pins.h` behind
 `#ifndef` guards when they exist.
 
 ## Drivers and motors
 
-TMC2209 stepper drivers over UART. Configured in `tuning.h`:
-sense resistor 0.11 Ω, 600 mA RMS per motor, 2 microsteps.
+TMC2209 stepper drivers. `tuning.h` carries the intended settings — sense
+resistor 0.11 Ω, 600 mA RMS per motor, 2 microsteps — and 2 microsteps is a
+deliberate trade, since more microstepping is quieter but loses torque and the
+tracks need torque more than silence.
 
-The 2-microstep setting is a deliberate trade — more microstepping is quieter
-but loses torque, and the tracks need torque more than they need silence.
+⚠ **None of that is applied yet.** No `TMC2209Stepper` is ever constructed, so
+those three constants have no readers and the drivers run at their hardware and
+jumper defaults. Wiring up UART control is V2 work. Until it lands, do not
+assume the motors are current-limited to 600 mA.
 
 ## Pressure plates — the accessibility part
 

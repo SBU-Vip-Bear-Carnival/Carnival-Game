@@ -29,13 +29,15 @@ Now there are guardrails.
 ## One-time setup
 
 ```bash
-git clone https://github.com/ORG/Carnival-Game.git
+git clone https://github.com/vip-bear-carnival/Carnival-Game.git
 cd Carnival-Game
 ./tools/setup.sh
 ```
 
-`setup.sh` installs a hook that stops you pushing to `main` by accident, and
-checks you have `arduino-cli`.
+`setup.sh` checks you have `arduino-cli`, installs a hook that stops you pushing
+to `main` by accident, creates your `tools/.env`, and then compiles the firmware
+to prove the toolchain works. If it fails at that last step, stop and fix it —
+you do not have a working setup yet.
 
 ---
 
@@ -92,7 +94,7 @@ Say what changed and why it matters. Present tense.
 Good:
 
 ```
-Raise the plate threshold to 450 — the TPU prototype reads lower than PLA
+Lower the plate threshold to 450 — the TPU prototype reads lower than PLA
 Stop the track drifting during the grace period
 Add the DFPlayer wiring diagram
 ```

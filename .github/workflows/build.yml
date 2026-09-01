@@ -16,6 +16,11 @@ jobs:
 
       - name: Install arduino-cli
         uses: arduino/setup-arduino-cli@v2
+        with:
+          # Pinned on purpose. sketch.yaml pins the core and libraries; leaving
+          # the tool that reads it floating would let a CLI release turn main
+          # red with no change in this repo.
+          version: "1.4.1"
 
       - name: Cache Arduino cores and libraries
         uses: actions/cache@v4

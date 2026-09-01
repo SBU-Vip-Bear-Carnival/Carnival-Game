@@ -11,7 +11,8 @@ tests/test_pressure_plate/test_pressure_plate.ino
 ```
 
 **Give each one its own `sketch.yaml`** (copy `firmware/carnival/sketch.yaml`
-and trim it to the libraries that test needs). CI compiles every test that has
+and trim it to the libraries that test needs). **Keep the profile named `mega`** —
+CI runs `--profile mega` for every test, so a renamed profile fails the build. CI compiles every test that has
 one and skips those that do not, so a test without a pinned profile is a test
 nobody is checking.
 

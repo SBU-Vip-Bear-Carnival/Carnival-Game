@@ -11,6 +11,10 @@
 // else, and CI always builds the real machine.
 //
 
+#include <Arduino.h>   // A0/A1 are defined here -- do not rely on the .ino
+                       // having included it first; a header under src/ that
+                       // includes pins.h before Arduino.h would not compile.
+
 #if __has_include("pins.local.h")
   #include "pins.local.h"
 #endif
@@ -33,6 +37,11 @@
 #ifndef DIR_PIN2
   #define DIR_PIN2    8
 #endif
+// ⚠ Pin 13 is the Mega's built-in LED pin. The bootloader toggles it for about
+// a second on every reset and every upload, and enable is active-LOW, so driver
+// 2 gets spurious enable pulses at power-up and at every flash. The onboard LED
+// also loads the line. This is V1's wiring, documented as-is -- moving it is a
+// hardware change. See docs/HARDWARE.md.
 #ifndef ENBL_PIN2
   #define ENBL_PIN2   13
 #endif

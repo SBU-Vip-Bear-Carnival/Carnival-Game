@@ -18,7 +18,18 @@ fi
 echo "  ok   arduino-cli $(arduino-cli version | awk '{print $3}')"
 
 # --- 2. pre-push hook: refuse to push main ------------------------------
-HOOK=.git/hooks/pre-push
+if [ ! -d .git/hooks ]; then
+  echo "  WARN no .git/hooks/ -- this is not a git clone, skipping the pre-push hook."
+  echo "       Clone the repo properly if you intend to push."
+  HOOK=/dev/null
+else
+  HOOK=.git/hooks/pre-push
+  # Re-running is safe, but someone else's hook is not ours to throw away.
+  if [ -f "$HOOK" ] && ! grep -q 'refs/heads/main' "$HOOK" 2>/dev/null; then
+    cp "$HOOK" "$HOOK.bak.$(date +%Y%m%d%H%M%S)"
+    echo "  ..   backed up your existing pre-push hook"
+  fi
+fi
 cat > "$HOOK" <<'HOOKEOF'
 #!/usr/bin/env bash
 # Refuses a direct push to main. Work on a branch and open a pull request --
@@ -39,15 +50,19 @@ while read -r _local_ref _local_sha remote_ref _remote_sha; do
 done
 exit 0
 HOOKEOF
-chmod +x "$HOOK"
-echo "  ok   pre-push hook installed (blocks pushes to main)"
+if [ "$HOOK" != /dev/null ]; then
+  chmod +x "$HOOK"
+  echo "  ok   pre-push hook installed (blocks pushes to main)"
+fi
 
 # --- 3. host-side env ---------------------------------------------------
-if [ ! -f tools/.env ] && [ -f tools/.env.example ]; then
+if [ -f tools/.env ]; then
+  echo "  ok   tools/.env already present"
+elif [ -f tools/.env.example ]; then
   cp tools/.env.example tools/.env
   echo "  ok   created tools/.env — set your serial port in it"
 else
-  echo "  ok   tools/.env already present"
+  echo "  WARN tools/.env.example is missing; create tools/.env by hand before flashing"
 fi
 
 # --- 4. prove the toolchain works ---------------------------------------

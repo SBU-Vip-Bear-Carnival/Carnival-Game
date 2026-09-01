@@ -26,7 +26,13 @@ gh auth status >/dev/null 2>&1 || { echo "run: gh auth login" >&2; exit 1; }
 
 # Creating teams and changing org settings needs admin:org. A default gh login
 # does not have it, and the failure without this check is an opaque 403.
-if ! gh auth status 2>&1 | grep -q 'admin:org'; then
+SCOPES=$(gh auth status 2>&1 | grep -o 'Token scopes:.*' || true)
+if [ -z "$SCOPES" ] || echo "$SCOPES" | grep -qi 'none'; then
+  # A fine-grained PAT or GH_TOKEN auth reports no OAuth scopes even when it can
+  # do everything here. Do not reject it -- let the first real call be the judge.
+  echo "==> note: cannot read OAuth scopes (fine-grained PAT or token auth)."
+  echo "    Continuing. If a call returns 403, the token lacks org admin rights."
+elif ! echo "$SCOPES" | grep -q 'admin:org'; then
   echo "Your gh token is missing the 'admin:org' scope." >&2
   echo "Grant it, then re-run:" >&2
   echo "    gh auth refresh -h github.com -s admin:org" >&2
@@ -44,19 +50,29 @@ echo "==> org $ORG found"
 # rather than configures. It is a hard stop on purpose: turning 2FA on AFTER
 # people join silently removes everyone who has not enabled it, which reads to
 # them as GitHub breaking rather than as a policy.
-TWOFA=$(gh api "orgs/$ORG" --jq '.two_factor_requirement_enabled // false')
-if [ "$TWOFA" != "true" ]; then
-  echo >&2
-  echo "  STOP: two-factor authentication is not required for this org." >&2
-  echo >&2
-  echo "  Turn it on BEFORE inviting anyone:" >&2
-  echo "    https://github.com/organizations/$ORG/settings/security" >&2
-  echo "    -> Require two-factor authentication" >&2
-  echo >&2
-  echo "  Then re-run this script." >&2
-  exit 1
-fi
-echo "==> 2FA required: yes"
+TWOFA=$(gh api "orgs/$ORG" --jq '.two_factor_requirement_enabled' 2>/dev/null || echo null)
+case "$TWOFA" in
+  true)
+    echo "==> 2FA required: yes"
+    ;;
+  false)
+    echo >&2
+    echo "  STOP: two-factor authentication is not required for this org." >&2
+    echo >&2
+    echo "  Turn it on BEFORE inviting anyone:" >&2
+    echo "    https://github.com/organizations/$ORG/settings/security" >&2
+    echo "    -> Require two-factor authentication" >&2
+    echo >&2
+    echo "  Then re-run this script." >&2
+    exit 1
+    ;;
+  *)
+    # GitHub returns this field only to org owners; absent is not the same as off.
+    echo "==> WARN: cannot read the 2FA setting -- you are probably not an owner"
+    echo "    of $ORG. Confirm with an owner that 2FA is required before inviting"
+    echo "    anyone. Continuing; the next call will fail if you lack admin."
+    ;;
+esac
 
 # --- 1. Org-wide defaults ----------------------------------------------
 # Base permission Read: members can see every repo, but nobody can push
@@ -106,8 +122,19 @@ for team in electronics software mechanical; do
       -f description="VIP BEAR $team subteam" \
       -f privacy=closed --silent
   fi
-  gh api -X PUT "orgs/$ORG/teams/$team/repos/$ORG/$REPO" \
-    -f permission=push --silent
+  # A freshly created team's slug can take a moment to resolve; without this
+  # the PUT 404s and set -e aborts after the repo already exists.
+  for attempt in 1 2 3 4 5; do
+    if gh api -X PUT "orgs/$ORG/teams/$team/repos/$ORG/$REPO" \
+         -f permission=push --silent 2>/dev/null; then
+      break
+    fi
+    if [ "$attempt" = 5 ]; then
+      echo "    FAILED to grant $team write on $REPO after 5 tries" >&2
+      exit 1
+    fi
+    sleep 2
+  done
   echo "    granted write on $REPO"
 done
 

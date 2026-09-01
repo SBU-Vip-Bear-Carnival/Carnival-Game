@@ -70,7 +70,7 @@ fine. Silently implying the first when you did the second is not.
 Present tense, say what changed and why it matters:
 
 ```
-Raise the plate threshold to 450 — the TPU prototype reads lower than PLA
+Lower the plate threshold to 450 — the TPU prototype reads lower than PLA
 ```
 
 not
