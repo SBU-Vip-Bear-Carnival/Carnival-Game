@@ -1,0 +1,17 @@
+# Code owners — who gets auto-requested for review on which files.
+#
+# ⚠ DELIBERATELY INACTIVE. Every rule below is commented out.
+#
+# The teams exist but are empty right now. If you enable these lines AND turn on
+# "require review from Code Owners", every PR needs approval from a team with no
+# members in it -- which nobody can give. That deadlocks the repo.
+#
+# Uncomment a line only once its team actually has people in it.
+
+# *                                    @<ORG>/software
+# /firmware/                           @<ORG>/software
+# /firmware/carnival/src/hardware/     @<ORG>/electronics
+# /firmware/carnival/src/config/pins.h @<ORG>/electronics
+# /hardware/                           @<ORG>/mechanical
+# /hardware/cad/                       @<ORG>/mechanical
+# /.github/                            @<ORG>/software

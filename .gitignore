@@ -1,0 +1,27 @@
+# Build output
+build/
+*.hex
+*.elf
+
+# Personal pin overrides. See firmware/carnival/src/config/pins.h --
+# your bench wiring must never be committed, it would break the cabinet.
+pins.local.h
+
+# Host-side environment (serial port differs per laptop)
+tools/.env
+
+# Secrets, if V2 ever adds networking
+secrets.h
+
+# Editor / OS
+.DS_Store
+.vscode/
+*.swp
+*~
+
+# Claude Code local config -- personal, not the team's
+CLAUDE.md
+.claude/
+
+# graphify output -- rebuilt, never versioned
+graphify-out/

@@ -1,0 +1,24 @@
+# Pinned toolchain for the carnival game firmware.
+#
+# This file is why "it compiles on my laptop" is not a thing on this project.
+# It locks the board core AND every library to an exact version, so your build,
+# everyone else's build, and the build CI runs are the same build.
+#
+#   arduino-cli compile --profile mega firmware/carnival
+#
+# Adding a library? Add it here with a version, or CI will not have it.
+# Find the current version with:  arduino-cli lib search <name>
+
+profiles:
+  mega:
+    notes: Arduino Mega 2560 — the cabinet board
+    fqbn: arduino:avr:mega
+    platforms:
+      - platform: arduino:avr (1.8.8)
+    libraries:
+      - TMCStepper (0.7.3)
+      - AccelStepper (1.64.0)
+      - FastLED (3.10.5)
+      - DFRobotDFPlayerMini (1.0.6)
+
+default_profile: mega

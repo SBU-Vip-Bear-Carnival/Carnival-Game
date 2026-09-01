@@ -1,0 +1,57 @@
+name: build
+
+# Runs on every PR and every push to main. The job below is the one to mark
+# as a required status check once the org is on GitHub Team.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install arduino-cli
+        uses: arduino/setup-arduino-cli@v2
+
+      - name: Cache Arduino cores and libraries
+        uses: actions/cache@v4
+        with:
+          path: ~/.arduino15
+          key: arduino-${{ hashFiles('firmware/carnival/sketch.yaml') }}
+          restore-keys: arduino-
+
+      # A personal pin override must never reach the repo -- if one does, the
+      # cabinet's wiring is no longer what main says it is.
+      - name: Reject committed pin overrides
+        run: |
+          if git ls-files | grep -q 'pins\.local\.h$'; then
+            echo "::error::pins.local.h is committed. It is gitignored for a reason -- remove it."
+            exit 1
+          fi
+          echo "ok: no pins.local.h in the index"
+
+      - name: Compile firmware
+        run: arduino-cli compile --profile mega firmware/carnival
+
+      # Bring-up sketches under tests/ build too, but only those carrying their
+      # own sketch.yaml -- otherwise there is no pinned toolchain to build with.
+      - name: Compile test sketches
+        run: |
+          shopt -s nullglob
+          found=0
+          for d in tests/*/; do
+            if [ -f "$d/sketch.yaml" ]; then
+              echo "--- compiling $d"
+              arduino-cli compile --profile mega "$d"
+              found=1
+            else
+              echo "--- skipping $d (no sketch.yaml -- add one to get it built)"
+            fi
+          done
+          if [ "$found" -eq 0 ]; then
+            echo "no test sketches with a pinned profile yet"
+          fi
