@@ -8,10 +8,10 @@
 #
 # Uncomment a line only once its team actually has people in it.
 
-# *                                    @<ORG>/software
-# /firmware/                           @<ORG>/software
-# /firmware/carnival/src/hardware/     @<ORG>/electronics
-# /firmware/carnival/src/config/pins.h @<ORG>/electronics
-# /hardware/                           @<ORG>/mechanical
-# /hardware/cad/                       @<ORG>/mechanical
-# /.github/                            @<ORG>/software
+# *                                    @vip-bear-carnival/software
+# /firmware/                           @vip-bear-carnival/software
+# /firmware/carnival/src/hardware/     @vip-bear-carnival/electronics
+# /firmware/carnival/src/config/pins.h @vip-bear-carnival/electronics
+# /hardware/                           @vip-bear-carnival/mechanical
+# /hardware/cad/                       @vip-bear-carnival/mechanical
+# /.github/                            @vip-bear-carnival/software

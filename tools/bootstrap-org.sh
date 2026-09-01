@@ -24,12 +24,39 @@ fi
 command -v gh >/dev/null || { echo "gh CLI not installed" >&2; exit 1; }
 gh auth status >/dev/null 2>&1 || { echo "run: gh auth login" >&2; exit 1; }
 
+# Creating teams and changing org settings needs admin:org. A default gh login
+# does not have it, and the failure without this check is an opaque 403.
+if ! gh auth status 2>&1 | grep -q 'admin:org'; then
+  echo "Your gh token is missing the 'admin:org' scope." >&2
+  echo "Grant it, then re-run:" >&2
+  echo "    gh auth refresh -h github.com -s admin:org" >&2
+  exit 1
+fi
+
 if ! gh api "orgs/$ORG" >/dev/null 2>&1; then
   echo "Organization '$ORG' does not exist, or you cannot see it." >&2
   echo "Create it first: https://github.com/account/organizations/new" >&2
   exit 1
 fi
 echo "==> org $ORG found"
+
+# 2FA cannot be set through the API -- it is read-only there -- so this checks
+# rather than configures. It is a hard stop on purpose: turning 2FA on AFTER
+# people join silently removes everyone who has not enabled it, which reads to
+# them as GitHub breaking rather than as a policy.
+TWOFA=$(gh api "orgs/$ORG" --jq '.two_factor_requirement_enabled // false')
+if [ "$TWOFA" != "true" ]; then
+  echo >&2
+  echo "  STOP: two-factor authentication is not required for this org." >&2
+  echo >&2
+  echo "  Turn it on BEFORE inviting anyone:" >&2
+  echo "    https://github.com/organizations/$ORG/settings/security" >&2
+  echo "    -> Require two-factor authentication" >&2
+  echo >&2
+  echo "  Then re-run this script." >&2
+  exit 1
+fi
+echo "==> 2FA required: yes"
 
 # --- 1. Org-wide defaults ----------------------------------------------
 # Base permission Read: members can see every repo, but nobody can push
@@ -39,6 +66,7 @@ gh api -X PATCH "orgs/$ORG" \
   -f default_repository_permission=read \
   -F members_can_create_repositories=false \
   -F members_can_create_public_repositories=false \
+  -F members_can_fork_private_repositories=false \
   --silent
 
 # --- 2. The repo -------------------------------------------------------
@@ -137,11 +165,11 @@ echo "=============================================================="
 echo
 echo "Still to do by hand:"
 echo "  1. Invite M. Ete Chan and Richard McKenna as org OWNERS."
-echo "     You cannot change your own role later -- a second owner is the only"
-echo "     way you ever get removed when you graduate."
+echo "     You cannot change your own role -- a second owner is the only way"
+echo "     you ever get removed when you graduate."
 echo "  2. Ask one of them to verify as a GitHub educator and upgrade the org"
 echo "     to Team (free): https://github.com/settings/education/benefits"
-echo "     Until that lands the ruleset above is saved but NOT enforced."
-echo "  3. Decide on requiring 2FA BEFORE inviting the rest of the team --"
-echo "     turning it on later removes anyone who has not enabled it."
-echo "  4. Invite the current roster into the teams."
+echo "     Until that lands the ruleset above is saved but NOT enforced, and"
+echo "     main stays force-pushable by anyone with write."
+echo "  3. Invite the current roster into the teams (2FA is already required,"
+echo "     so tell them to enable it before you send the invite)."
