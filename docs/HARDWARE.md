@@ -3,6 +3,9 @@
 Arduino **Mega 2560**. The Mega is required, not incidental — the pin count and
 the extra hardware serial ports (the DFPlayer uses `Serial1`) do not fit on a Uno.
 
+See [`hardware/wiring/SCHEMATIC.md`](../hardware/wiring/SCHEMATIC.md) for the same
+information as a diagram.
+
 ## Pin map
 
 This table mirrors `firmware/carnival/src/config/pins.h`. **If you move a wire,
