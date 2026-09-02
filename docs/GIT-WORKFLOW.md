@@ -29,7 +29,7 @@ Now there are guardrails.
 ## One-time setup
 
 ```bash
-git clone https://github.com/vip-bear-carnival/Carnival-Game.git
+git clone https://github.com/SBU-Vip-Bear-Carnival/Carnival-Game.git
 cd Carnival-Game
 ./tools/setup.sh
 ```

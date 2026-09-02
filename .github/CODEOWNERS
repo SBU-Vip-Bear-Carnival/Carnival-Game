@@ -8,10 +8,10 @@
 #
 # Uncomment a line only once its team actually has people in it.
 
-# *                                    @vip-bear-carnival/software
-# /firmware/                           @vip-bear-carnival/software
-# /firmware/carnival/src/hardware/     @vip-bear-carnival/electronics
-# /firmware/carnival/src/config/pins.h @vip-bear-carnival/electronics
-# /hardware/                           @vip-bear-carnival/mechanical
-# /hardware/cad/                       @vip-bear-carnival/mechanical
-# /.github/                            @vip-bear-carnival/software
+# *                                    @SBU-Vip-Bear-Carnival/software
+# /firmware/                           @SBU-Vip-Bear-Carnival/software
+# /firmware/carnival/src/hardware/     @SBU-Vip-Bear-Carnival/electronics
+# /firmware/carnival/src/config/pins.h @SBU-Vip-Bear-Carnival/electronics
+# /hardware/                           @SBU-Vip-Bear-Carnival/mechanical
+# /hardware/cad/                       @SBU-Vip-Bear-Carnival/mechanical
+# /.github/                            @SBU-Vip-Bear-Carnival/software

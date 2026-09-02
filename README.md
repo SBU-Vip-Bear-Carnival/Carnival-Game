@@ -14,7 +14,7 @@ sound feedback, four game modes.
 ## Quick start
 
 ```bash
-git clone https://github.com/vip-bear-carnival/Carnival-Game.git
+git clone https://github.com/SBU-Vip-Bear-Carnival/Carnival-Game.git
 cd Carnival-Game
 ./tools/setup.sh
 arduino-cli compile --profile mega firmware/carnival
