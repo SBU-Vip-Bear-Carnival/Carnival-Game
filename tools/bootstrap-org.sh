@@ -109,10 +109,13 @@ gh api -X PATCH "repos/$ORG/$REPO" \
   --silent
 
 # --- 4. Teams ----------------------------------------------------------
+# The team is organised as Electronics and Design -- there is no separate
+# software sub-team; the electronics side writes the firmware.
+#
 # Created empty on purpose. Write = push a branch and open a PR; it does NOT
 # mean merge to main. That combination is what "everyone works on their own
 # branch" is, mechanically.
-for team in electronics software mechanical; do
+for team in electronics design; do
   if gh api "orgs/$ORG/teams/$team" >/dev/null 2>&1; then
     echo "==> team $team exists"
   else
