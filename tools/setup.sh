@@ -34,8 +34,17 @@ cat > "$HOOK" <<'HOOKEOF'
 #!/usr/bin/env bash
 # Refuses a direct push to main. Work on a branch and open a pull request --
 # see docs/GIT-WORKFLOW.md.
-while read -r _local_ref _local_sha remote_ref _remote_sha; do
+# One exception: creating main for the first time on an empty remote. Git sends
+# an all-zero remote sha for a branch that does not exist yet. Without this the
+# very first push a repo ever receives is impossible, which is how someone ends
+# up reaching for --no-verify and learning to ignore the hook.
+while read -r _local_ref _local_sha remote_ref remote_sha; do
   if [ "$remote_ref" = "refs/heads/main" ]; then
+    case "$remote_sha" in
+      *[!0]*) ;;                 # a real sha -- main exists, keep blocking
+      *) echo "  note: main does not exist on the remote yet, allowing this one."
+         continue ;;
+    esac
     echo
     echo "  BLOCKED: you are pushing straight to main."
     echo
