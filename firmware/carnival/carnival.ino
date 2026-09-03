@@ -25,14 +25,35 @@
 #include "src/config/tuning.h"
 #include "src/config/types.h"
 #include "src/hardware/audio.h"
+#include "src/hardware/button.h"
+#include "src/hardware/led.h"
+#include "src/hardware/lightstrip.h"
+#include "src/hardware/limit_switch.h"
+#include "src/hardware/pressure_plate.h"
+#include "src/hardware/track.h"
 
 // --- Globals -----------------------------------------------------------
-AccelStepper track1(AccelStepper::DRIVER, STEP_PIN1, DIR_PIN1);
-AccelStepper track2(AccelStepper::DRIVER, STEP_PIN2, DIR_PIN2);
-
-CRGB        leds[NUM_LEDS];
+CRGB        leds[NUM_LEDS];        // MyLightstrip writes through this, via extern
 AudioSystem audio;
 GameMode    currentMode = MODE_STANDBY;
+
+MyButton        startButton(STRT_PIN);
+MyLED           statusLED(START_LED);
+MyLED           led1(LED1);
+MyLED           led2(LED2);
+MyLightstrip    lightStrip;
+MyPressureplate pressurePlate1(PRES1);
+MyPressureplate pressurePlate2(PRES2);
+
+// ⚠ MyTrack is NOT constructed yet, on purpose.
+//
+// Its constructor wants a HardwareSerial* for the TMC2209's UART. V1 handed it
+// Serial1 and Serial2; V2 has already given Serial1 to the DFPlayer. Picking a
+// port here would bury a wiring decision inside a port commit, so the two
+// tracks arrive in the hw/uart-split PR along with the wire that has to move.
+//
+// The bare AccelStepper globals V1 never had are gone with them -- MyTrack owns
+// its own stepper, and two objects driving one motor is worse than none.
 
 // --- Setup -------------------------------------------------------------
 void setup() {
@@ -42,28 +63,23 @@ void setup() {
   Serial1.begin(9600);
   audio.begin(Serial1);
 
-  pinMode(ENBL_PIN1, OUTPUT);
-  pinMode(ENBL_PIN2, OUTPUT);
-  digitalWrite(ENBL_PIN1, LOW);   // LOW = driver enabled on the TMC2209
-  digitalWrite(ENBL_PIN2, LOW);
+  // Each object sets up its own pins in begin(). The loose pinMode() calls that
+  // used to live here are gone -- two places configuring one pin is how they
+  // drift apart.
+  startButton.begin();
+  statusLED.begin();
+  led1.begin();
+  led2.begin();
+  pressurePlate1.begin();
+  pressurePlate2.begin();
 
-  pinMode(TRK1_LS1, INPUT_PULLUP);
-  pinMode(TRK1_LS2, INPUT_PULLUP);
-  pinMode(TRK2_LS1, INPUT_PULLUP);
-  pinMode(TRK2_LS2, INPUT_PULLUP);
+  // ⚠ FastLED.addLeds() lives in MyLightstrip::begin() and MUST NOT also be
+  // called here -- registering the same strip twice makes FastLED write it
+  // twice on every show(), which costs time and flickers.
+  lightStrip.begin();
 
-  pinMode(STRT_PIN,  INPUT_PULLUP);
-  pinMode(START_LED, OUTPUT);
-  pinMode(LED1,      OUTPUT);
-  pinMode(LED2,      OUTPUT);
-
-  track1.setMaxSpeed(MAX_STEPPER_SPEED);
-  track1.setAcceleration(STEPPER_ACCELERATION);
-  track2.setMaxSpeed(MAX_STEPPER_SPEED);
-  track2.setAcceleration(STEPPER_ACCELERATION);
-
-  FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
-  FastLED.clear(true);
+  // Limit switch and ENABLE pins are configured by MyTrack::begin(), which
+  // arrives with the tracks in hw/uart-split.
 
   Serial.println(F("carnival: ready"));
 }
