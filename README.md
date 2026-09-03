@@ -22,6 +22,10 @@ arduino-cli compile --profile mega firmware/carnival
 
 If that compiles, you have a working setup. You do not need the Arduino IDE.
 
+**To put the code on the actual machine, see [`docs/FLASHING.md`](docs/FLASHING.md)**
+— uploading, reading what the game prints, and what to do when it will not talk
+to the board.
+
 **Before you write any code, read [`docs/GIT-WORKFLOW.md`](docs/GIT-WORKFLOW.md).**
 `main` is protected — all work happens on a branch and merges through a pull
 request.

@@ -46,8 +46,15 @@ This is inherited from V1 and is documented here as the machine actually is.
 edit in the same PR. Any free digital pin that is not 13 will do. Worth doing
 before V2 ships; harmless to leave while bench testing.
 
-Not yet wired — the V2 5-button panel and LCD. Add them to `pins.h` behind
-`#ifndef` guards when they exist.
+### The V2 panel — assigned, not yet wired
+
+Pins are now in `pins.h`: LCD `RS/E/D4-D7` on 30-35, buttons on 40-44. The
+display is a **parallel HD44780 in 4-bit mode**, not I²C.
+
+⚠ **Three problems in the team's wiring table need answering before anyone
+solders** — `EN` tied to GND contradicts the firmware, there is no `PDN_UART`
+line so every TMC setting is dead, and the LCD is missing a data line. All three
+are written up in [`docs/decisions/0002-ui-panel-wiring.md`](decisions/0002-ui-panel-wiring.md).
 
 ## Drivers and motors
 
@@ -91,4 +98,7 @@ cp pins.local.example.h pins.local.h
 ```
 
 Override only the pins that differ. The file is gitignored, CI never sees it,
-and deleting it returns you to the cabinet's real wiring.
+and deleting it returns you to the cabinet's real wiring. Every overridable pin
+is listed, commented out, in `pins.local.example.h`.
+
+Uploading and serial monitoring: [`FLASHING.md`](FLASHING.md).
