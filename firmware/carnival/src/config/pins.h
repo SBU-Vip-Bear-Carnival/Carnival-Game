@@ -87,6 +87,49 @@
   #define DATA_PIN    6    // WS2812B data line
 #endif
 
-// --- V2 additions ------------------------------------------------------
-// The 5-button UI panel and LCD are not wired yet. Add them here with a
-// #ifndef guard when the panel exists, and update hardware/wiring/ to match.
+// --- V2: the 5-button UI panel and LCD ---------------------------------
+// Assigned 2026-09-02 from the team's wiring table. Reasoning, and the three
+// problems found in that table, are in docs/decisions/0002-ui-panel-wiring.md.
+//
+// ⚠ NOT WIRED YET. These are the intended assignments, not the cabinet as it
+// stands. Nothing in the firmware uses them until the menu lands.
+
+// HD44780 parallel LCD, 4-bit mode.
+// ⚠ The module's pin numbers and the Arduino's pin numbers are different things.
+// LCD_D6 below is Arduino pin 34, going to *module* pin 13. Do not wire a data
+// line to Arduino pin 13 -- that is the built-in LED, and it is ENBL_PIN2.
+#ifndef LCD_RS
+  #define LCD_RS      30   // -> module pin 4
+#endif
+#ifndef LCD_EN
+  #define LCD_EN      31   // -> module pin 6
+#endif
+#ifndef LCD_D4
+  #define LCD_D4      32   // -> module pin 11  (missing from the team's table)
+#endif
+#ifndef LCD_D5
+  #define LCD_D5      33   // -> module pin 12
+#endif
+#ifndef LCD_D6
+  #define LCD_D6      34   // -> module pin 13
+#endif
+#ifndef LCD_D7
+  #define LCD_D7      35   // -> module pin 14
+#endif
+
+// Five UI buttons, INPUT_PULLUP, other leg to GND.
+#ifndef BTN_UP
+  #define BTN_UP      40
+#endif
+#ifndef BTN_DOWN
+  #define BTN_DOWN    41
+#endif
+#ifndef BTN_SELECT
+  #define BTN_SELECT  42
+#endif
+#ifndef BTN_BACK
+  #define BTN_BACK    43
+#endif
+#ifndef BTN_START
+  #define BTN_START   44   // duplicates STRT_PIN 48 during the transition
+#endif
