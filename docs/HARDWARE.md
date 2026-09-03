@@ -98,4 +98,7 @@ cp pins.local.example.h pins.local.h
 ```
 
 Override only the pins that differ. The file is gitignored, CI never sees it,
-and deleting it returns you to the cabinet's real wiring.
+and deleting it returns you to the cabinet's real wiring. Every overridable pin
+is listed, commented out, in `pins.local.example.h`.
+
+Uploading and serial monitoring: [`FLASHING.md`](FLASHING.md).
