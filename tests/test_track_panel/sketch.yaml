@@ -1,0 +1,25 @@
+# Pinned toolchain for the track + panel bring-up sketch.
+#
+# Trimmed from firmware/carnival/sketch.yaml to just what this test needs.
+# The profile MUST stay named `mega` -- CI runs `--profile mega` for every
+# test directory that has one of these.
+#
+#   arduino-cli compile --profile mega tests/test_track_panel
+#
+# Two libraries here are NOT in the firmware's sketch.yaml yet:
+#   LiquidCrystal     -- the panel LCD, still unmerged (PR #2)
+#   Adafruit NeoPixel -- the firmware drives WS2812B with FastLED instead.
+# This sketch is kept as it was written rather than ported, so both are pinned
+# here and neither is added to the firmware build. See README.md.
+
+profiles:
+  mega:
+    notes: Arduino Mega 2560 — the cabinet board
+    fqbn: arduino:avr:mega
+    platforms:
+      - platform: arduino:avr (1.8.8)
+    libraries:
+      - LiquidCrystal (1.0.7)
+      - Adafruit NeoPixel (1.15.5)
+
+default_profile: mega
