@@ -6,6 +6,11 @@ committed here **verbatim** — only the file and folder were renamed to match t
 problems described below. It is a record of what was actually run on a bench,
 which is worth more than a tidied version of it.
 
+Its stripped companion is [`../test_track_buttons`](../test_track_buttons) — the
+same track and buttons with no display and no libraries, from the same Discord
+drop. Reach for that one first when something is wrong; it isolates the track
+from the panel, and unlike this sketch it responds to a button immediately.
+
 It is the first thing we have that drives the **track and the V2 UI panel
 together**: five buttons pick forward / stop / reverse and step a speed level
 1–10, the LCD shows the mode and a ten-box speed bar, and a WS2812B strip runs a

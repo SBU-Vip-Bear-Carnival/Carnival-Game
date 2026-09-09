@@ -1,0 +1,17 @@
+# Pinned toolchain for the track + buttons bring-up sketch.
+#
+# This sketch includes no libraries at all -- it is digitalWrite and micros().
+# The profile still has to exist and still has to be named `mega`, because CI
+# runs `--profile mega` on every test directory carrying one of these, and skips
+# the ones that do not. A test with no sketch.yaml is a test nobody checks.
+#
+#   arduino-cli compile --profile mega tests/test_track_buttons
+
+profiles:
+  mega:
+    notes: Arduino Mega 2560 — the cabinet board
+    fqbn: arduino:avr:mega
+    platforms:
+      - platform: arduino:avr (1.8.8)
+
+default_profile: mega
