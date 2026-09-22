@@ -1,8 +1,8 @@
 # control-casing — the UI panel enclosure, as received
 
-Five STLs dropped in the team Discord on **2026-09-21**, committed here
-**verbatim**: the bytes and the filenames are exactly as shared, nothing was
-re-exported, renamed or repaired. Same policy as the two bench sketches in
+Five STLs dropped in the team Discord on **2026-09-21** by **Jerry Wu**, who drew
+them, committed here **verbatim**: the bytes and the filenames are exactly as
+shared, nothing was re-exported, renamed or repaired. Same policy as the two bench sketches in
 [`tests/`](../../../tests) — these are a record of what someone actually drew,
 and a tidied version of that is worth less.
 
@@ -11,6 +11,18 @@ and a tidied version of that is worth less.
 maintain; `casing body` vs `case_body` is how the files arrived, and renaming
 them would destroy the only evidence of what supersedes what. Apply the rule to
 the `.f3d`/`.step` when it lands — see *What is missing* below.
+
+> [!important] The next drop is versioned: `v<main>.<major>.<minor>`
+> Agreed in Discord on 2026-09-21 — main version, major change, minor change.
+> Jerry already numbers internally (the assembly is `ControlCasing**2**`, and the
+> next revision is **v2.4**); it just never reached the filenames. So
+> `control-casing-v2.4-body.stl`, not `case_body.stl`.
+>
+> **Both rules are right, for different files.** `../README.md`'s "git holds the
+> versions" is correct for source CAD the team maintains **in this repo**. It is
+> wrong for STL exports arriving from one person's private CAD, where git holds
+> only what we were sent and the filename is the only ordering information that
+> travels with it. These are the second kind.
 
 ## They are one part, in one coordinate frame
 
@@ -68,6 +80,42 @@ opening.
 > a look before it is printed — it may be intended, but a 0.2 mm clearance hole
 > for a whole PCB also has nowhere to screw down.
 
+## ❌❌ Rev B has no floor — and rev A did
+
+**This is a regression, not a gap.** Cross-sections taken just above the base:
+
+| File | At z = 1 mm | Verdict |
+|---|---|---|
+| `casing body` (rev A) | solid across the full width | **5 mm floor**, z 0→5 |
+| `case_body` (rev B) | open through the middle | **no floor at all** |
+
+Rev B — the newest, the one anyone would print — **deleted the base rev A had.**
+It is an open frame, through from front to back.
+
+⚠ **The panel mounts vertically**, so "down" for anything inside is toward the
+open back, not toward a floor. Raised in Discord on 2026-09-21 (*"you put the
+arduino in, there is nothing supporting it behind"*) and confirmed here against
+the meshes. As it stands the contents are held in by the lid and by friction.
+
+### Depth pulls the other way
+
+| Revision | Clear internal depth | Floor? |
+|---|---|---|
+| Rev A | **~18 mm** (floor top z=5 → body top z=23) | ✅ |
+| Rev B | **28 mm** (no floor → lid underside z=28) | ❌ |
+
+Also asked in the same exchange — *"are you sure the box is deep enough for all
+the headers and stuff"* — and the two revisions answer in opposite directions.
+**Rev A is the one that is probably too shallow; rev B is the one deep enough.**
+So the fix is **rev A's floor at rev B's depth**, not a choice between them.
+
+⚠ **Nobody has measured the actual board.** For scale only: a Mega 2560 is ~1.6 mm
+of PCB with ~3 mm of solder-side lead, a stacked female header stands ~8.5 mm
+proud, and dupont housings on that header add roughly another 14–15 mm — call it
+~20 mm before bend radius on the wire leaving the connector. **Those are
+catalogue figures, not measurements of our hardware.** Put a caliper on the real
+board with its jumpers fitted before cutting v2.4; it is the number this turns on.
+
 ## ❌ There are no button holes. Not one.
 
 The face has the LCD window, the 30.2 mm square, and the four corner holes. That
@@ -98,13 +146,15 @@ Nothing in the repo describes a 30 mm square part. Candidates nobody has
 confirmed: a 30 × 30 fan, a panel-mount connector, a keypad module, or — given
 the `-Stem` in the assembly filename — a **30 mm square tube the panel mounts
 on**, which would suit a height-adjustable panel for a seated player. **This is
-speculation from a filename.** Ask whoever drew it.
+speculation from a filename**, and it did **not** come up in the 2026-09-21
+review, which covered mounting, depth and naming only. Still open; asked on the PR.
 
 ## What is missing
 
 - **No source CAD.** `../README.md` asks for the `.f3d`/`.step` beside the
   export, because an STL can only be replaced, not modified. Five STLs and no
-  editable file means the next revision has to come from the same person.
+  editable file means **only Jerry can revise this** — which is worth saying out
+  loud now that a revision is due the week of Sept 28.
 - **No material, no print settings**, and no note of which printer. Note that
   [ADR 0001](../../../docs/decisions/0001-tpu-pressure-plates.md) governs the plates, not
   this — but the TPU printer request is still unanswered, so do not assume a
