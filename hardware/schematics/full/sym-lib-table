@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "carnival")(type "KiCad")(uri "${KIPRJMOD}/carnival.kicad_sym")(options "")(descr "Carnival Game parts"))
+)
