@@ -1,0 +1,12 @@
+# Pinned toolchain for this bench test (see tests/README.md). Profile stays "mega" for CI.
+profiles:
+  mega:
+    notes: Arduino Mega 2560
+    fqbn: arduino:avr:mega
+    platforms:
+      - platform: arduino:avr (1.8.8)
+    libraries:
+      - LiquidCrystal (1.0.7)
+      - Adafruit NeoPixel (1.15.5)
+
+default_profile: mega
